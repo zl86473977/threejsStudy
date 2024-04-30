@@ -20,6 +20,16 @@ document.body.appendChild(renderer.domElement)
 
 // 创建三角形
 const geometry = new THREE.BufferGeometry();
+// 1.创建顶点数据
+// const vertices = new Float32Array([
+//   // 逆时针为正面 顺时针为反面
+//   -1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0,
+//   1.0, 1.0, 0.0, -1.0, 1.0, 0.0, -1.0, -1.0, 0.0
+// ]);
+// // 创建顶点属性
+// geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+
+// 2.使用索引绘制
 const vertices = new Float32Array([
   -1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0
 ])
@@ -30,22 +40,13 @@ const indices = new Uint16Array([
 ])
 geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-// 设置2个定点组，形成2个材质
-geometry.addGroup(0, 3, 0);
-geometry.addGroup(3, 3, 1);
-
 // 创建材质
 const material = new THREE.MeshBasicMaterial({
   color: 0x00ff00,
   // side: THREE.DoubleSide
   wireframe: true
 });
-const material1 = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
-  // side: THREE.DoubleSide
-  // wireframe: true
-});
-const triangle = new THREE.Mesh(geometry, [material, material1]);
+const triangle = new THREE.Mesh(geometry, material);
 
 console.log(geometry);
 // 添加到场景中
