@@ -2,8 +2,6 @@
 import * as THREE from "three"
 // 导入控制器
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-// 导入hdr加载器
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 
 // 创建场景
 const scene = new THREE.Scene();
@@ -20,50 +18,38 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement)
 
-// 创建纹理加载器
-let textureLoader = new THREE.TextureLoader();
-// 加载纹理
-let texture = textureLoader.load('./JPG/flower.png'); 
+// 创建三角形
+const geometry = new THREE.BufferGeometry();
+const vertices = new Float32Array([
+  -1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0
+])
+geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+const indices = new Uint16Array([
+  0, 1, 2,
+  2, 3, 0
+])
+geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-// 加载ao贴图
-// let aoTexture = textureLoader.load('./JPG/flower_ao.jpg');
-// 透明度贴图
-// let alphaTexture = textureLoader.load('./JPG/flower_alpha.jpg');
-// 光照贴图
-// let lightTexture = textureLoader.load('./JPG/flower_light.jpg');
-// 高光贴图
-// let hightTexture = textureLoader.load('./JPG/flower_hight.jpg');
-// rbgeLoader加载hdr图片
-let rgbeLoader = new RGBELoader();
-rgbeLoader.load('./hdr/sky_linekotsi_01_HDRI.hdr', (envMap) => {
-  // 设置球形贴图
-  envMap.mapping = THREE.EquirectangularReflectionMapping;
-  // 设置环境贴图
-  scene.background = envMap;
-  scene.environment = envMap;
-  // 设置plane的环境贴图
-  plainMaterial.envMap = envMap;
-});
+// 设置2个定点组，形成2个材质
+geometry.addGroup(0, 3, 0);
+geometry.addGroup(3, 3, 1);
 
-let plainGeometry = new THREE.PlaneGeometry(2, 2);
-let plainMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
-  map: texture,
-  side: THREE.DoubleSide,
-  transparent: true,
-  // 设置ao贴图
-  // aoMap: aoTexture
-  // 设置透明度贴图
-  // alphaMap: alphaTexture
-  // 设置光照贴图
-  // lightMap: lightTexture
-  // 设置高光贴图
-  // specularMap: hightTexture
-  // 设置反射程度
-  // reflectivity: 0.5
+// 创建材质
+const material = new THREE.MeshBasicMaterial({
+  color: 0x00ff00,
+  // side: THREE.DoubleSide
+  wireframe: true
 });
-let plain = new THREE.Mesh(plainGeometry, plainMaterial);
-scene.add(plain);
+const material1 = new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  // side: THREE.DoubleSide
+  // wireframe: true
+});
+const triangle = new THREE.Mesh(geometry, [material, material1]);
+
+console.log(geometry);
+// 添加到场景中
+scene.add(triangle);
 
 // 设置相机位置
 camera.position.x = 5;
