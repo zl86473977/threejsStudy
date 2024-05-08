@@ -4,6 +4,10 @@ import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // 导入hdr加载器
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+// 导入gltf加载器
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+// 导入draco解码器
+// import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 
 // 创建场景
 const scene = new THREE.Scene();
@@ -14,70 +18,46 @@ const camera = new THREE.PerspectiveCamera(
   0.1, // 近平面
   1000 // 远平面
 );
-
 // 创建渲染器
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement)
-
-// 创建纹理加载器
-let textureLoader = new THREE.TextureLoader();
-// 加载纹理
-let texture = textureLoader.load('./JPG/flower.png'); 
-
-// 加载ao贴图
-// let aoTexture = textureLoader.load('./JPG/flower_ao.jpg');
-// 透明度贴图
-// let alphaTexture = textureLoader.load('./JPG/flower_alpha.jpg');
-// 光照贴图
-// let lightTexture = textureLoader.load('./JPG/flower_light.jpg');
-// 高光贴图
-// let hightTexture = textureLoader.load('./JPG/flower_hight.jpg');
-// rbgeLoader加载hdr图片
-let rgbeLoader = new RGBELoader();
-rgbeLoader.load('./hdr/sky_linekotsi_01_HDRI.hdr', (envMap) => {
-  // 设置球形贴图
-  envMap.mapping = THREE.EquirectangularReflectionMapping;
-  // 设置环境贴图
-  scene.background = envMap;
-  scene.environment = envMap;
-  // 设置plane的环境贴图
-  plainMaterial.envMap = envMap;
-});
-
-let plainGeometry = new THREE.PlaneGeometry(2, 2);
-let plainMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
-  map: texture,
-  side: THREE.DoubleSide,
-  transparent: true,
-  // 设置ao贴图
-  // aoMap: aoTexture
-  // 设置透明度贴图
-  // alphaMap: alphaTexture
-  // 设置光照贴图
-  // lightMap: lightTexture
-  // 设置高光贴图
-  // specularMap: hightTexture
-  // 设置反射程度
-  // reflectivity: 0.5
-});
-let plain = new THREE.Mesh(plainGeometry, plainMaterial);
-scene.add(plain);
-
 // 设置相机位置
 camera.position.x = 5;
 camera.position.y = 10;
 camera.position.z = 10;
 camera.lookAt(0, 0, 0);
-
 // 添加世界坐标辅助器
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
-
 // 添加控制器
 // 这边第二个参数传document.body会导致下面的全屏无法触发
 const controls = new OrbitControls(camera, renderer.domElement);
+
+
+
+// 实例化加载器gltf加载器
+// const gltfLoader = new GLTFLoader();
+// gltfLoader.load("./gltf/snow.glb", (gltf) => {
+//     console.log(gltf)
+//     scene.add(gltf.scene);
+// });
+// // 实例化 draco解码器
+// const dracoLoader = new DRACOLoader();
+// // 设置draco解码器路径
+// dracoLoader.setDecoderPath("./draco/");
+// // 设置gltf加载器的draco解码器
+// gltfLoader.setDRACOLoader(dracoLoader);
+
+// rbgeLoader加载hdr图片
+// let rgbeLoader = new RGBELoader();
+// rgbeLoader.load('./hdr/sky_linekotsi_01_HDRI.hdr', (envMap) => {
+//   // 设置球形贴图
+//   envMap.mapping = THREE.EquirectangularReflectionMapping;
+//   // 设置环境贴图
+//   scene.background = envMap;
+//   scene.environment = envMap;
+// });
 
 // 渲染
 renderer.render(scene, camera);
@@ -89,7 +69,6 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
-
 // 画布自适应窗口
 window.addEventListener("resize", () => {
   // 更新渲染器
@@ -100,6 +79,17 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
 });
 
+// 创建长方体
+const boxGeometry = new THREE.BoxGeometry(1, 1, 100);
+const boxMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const box = new THREE.Mesh(boxGeometry, boxMaterial);
+scene.add(box);
+
+// 创建场景fog
+// scene.fog = new THREE.Fog(0x999999, 0.1, 50);
+// 创建场景指数fog
+scene.fog = new THREE.FogExp2(0x999999, 0.1);
+scene.background = new THREE.Color(0x999999);
 </script>
 
 <template>
